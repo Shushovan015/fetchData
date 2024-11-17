@@ -7,7 +7,9 @@ const path = require("path");
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "*" }));  // Allow all domains (replace with specific domain in production)
+app.use(cors({ origin: "https://github.com/Shushovan015/fetchData/designer" })); // Allow all domains (Replace with specific domain in production)
+app.use(express.json()); // Parse JSON payload
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded payload
 
 // Handle CORS preflight (OPTIONS)
 app.options("*", cors());
@@ -41,11 +43,12 @@ app.post("/designer", upload.fields([{ name: "images" }, { name: "pdfs" }]), (re
   const imageFiles = req.files.images ? req.files.images.map((file) => file.path) : [];
   const pdfFiles = req.files.pdfs ? req.files.pdfs.map((file) => file.path) : [];
 
-  // Mimic processing and send a response
+  // Validate payload
   if (!lineItems || !product_id || !product_number) {
     return res.status(400).json({ status: "error", message: "Invalid payload" });
   }
 
+  // Respond with the received data
   const response = {
     status: "success",
     message: "Payload and files received successfully.",
