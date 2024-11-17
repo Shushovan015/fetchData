@@ -28,7 +28,7 @@ if (!fs.existsSync("uploads")) {
 }
 
 // POST route to handle the payload and file uploads
-app.post("/designer.php", upload.fields([{ name: "images" }, { name: "pdfs" }]), (req, res) => {
+app.post("/designer", upload.fields([{ name: "images" }, { name: "pdfs" }]), (req, res) => {
   // Log the received payload and files for debugging
   console.log("Received payload:", req.body);
   console.log("Uploaded files:", req.files);
