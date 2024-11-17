@@ -1,14 +1,13 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 
 // Middleware
-app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ origin: "*" }));  // Allow all domains (replace with specific domain in production)
 
 // Multer setup for handling file uploads
 const storage = multer.diskStorage({
@@ -22,7 +21,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Create an "uploads" directory if it doesn't exist
-const fs = require("fs");
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
