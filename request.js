@@ -1,13 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const path = require("path");
 const fs = require("fs");
+const path = require("path");
 
 const app = express();
 
 // Middleware
 app.use(cors({ origin: "*" }));  // Allow all domains (replace with specific domain in production)
+
+// Handle CORS preflight (OPTIONS)
+app.options("*", cors());
 
 // Multer setup for handling file uploads
 const storage = multer.diskStorage({
