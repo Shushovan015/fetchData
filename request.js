@@ -1,33 +1,23 @@
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const fs = require("fs");
 
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "https://github.com/Shushovan015/fetchData/designer" })); // Update with specific allowed origin
+app.use(
+  cors({
+    origin: ["https://api.fm24api.com", "http://localhost:3000"], // Allowed origins
+    methods: ["GET", "POST"], // Allowed methods
+    credentials: true, // Include cookies if needed
+  })
+);
 app.use(express.json()); // Parse JSON payload
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded payload
 
-// Handle CORS preflight (OPTIONS)
-app.options("*", cors());
-
-// Multer setup for handling file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Directory where files will be stored
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // Create unique filenames
-  },
-});
+// Multer setup for handling file uploads (Memory Storage)
+const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage });
-
-// Create an "uploads" directory if it doesn't exist
-if (!fs.existsSync("uploads")) {
-  fs.mkdirSync("uploads");
-}
 
 // POST route to handle the payload and file uploads
 app.post("/designer", upload.fields([{ name: "images" }, { name: "pdfs" }]), (req, res) => {
@@ -46,11 +36,23 @@ app.post("/designer", upload.fields([{ name: "images" }, { name: "pdfs" }]), (re
       brand_name = null,
     } = req.body;
 
-    // Extract file paths (handle empty files gracefully)
-    const imageFiles = req.files?.images?.map((file) => file.path) || [];
-    const pdfFiles = req.files?.pdfs?.map((file) => file.path) || [];
+    // Extract file buffers (in memory)
+    const imageFiles = req.files?.images?.map((file) => ({
+      originalName: file.originalname,
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+    })) || [];
+    const pdfFiles = req.files?.pdfs?.map((file) => ({
+      originalName: file.originalname,
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+    })) || [];
 
-    // Respond with the received data, even if optional fields are missing
+    // Log the file details for debugging (no files saved to disk)
+    console.log("Images:", imageFiles);
+    console.log("PDFs:", pdfFiles);
+
+    // Respond with the received data
     const response = {
       status: "success",
       message: "Payload and files received successfully.",
@@ -61,8 +63,8 @@ app.post("/designer", upload.fields([{ name: "images" }, { name: "pdfs" }]), (re
         shop_url,
         product_name,
         brand_name,
-        images: imageFiles,
-        pdfs: pdfFiles,
+        images: imageFiles.map((file) => file.originalName), // Include file names
+        pdfs: pdfFiles.map((file) => file.originalName), // Include file names
       },
     };
 
