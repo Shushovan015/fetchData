@@ -23,7 +23,7 @@ const upload = multer({ storage });
 // POST route to handle the payload and file uploads
 app.post(
   "/designer",
-  upload.fields([{ name: "images" }, { name: "pdfs" }]),
+  // upload.fields([{ name: "images" }, { name: "pdfs" }]),
   (req, res) => {
     try {
       // Log the received payload and files for debugging
@@ -68,8 +68,8 @@ app.post(
           shop_url,
           product_name,
           brand_name,
-          images: imageFiles.map((file) => file.originalName), // Include file names
-          pdfs: pdfFiles.map((file) => file.originalName), // Include file names
+          // images: imageFiles.map((file) => file.originalName), // Include file names
+          // pdfs: pdfFiles.map((file) => file.originalName), // Include file names
         },
       };
 
